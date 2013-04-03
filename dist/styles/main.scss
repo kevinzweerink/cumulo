@@ -1,0 +1,148 @@
+@import "reset";
+@import "compass/css3";
+
+* {
+	@include box-sizing(border-box);
+}
+
+$sans: helvetica, arial, sans-serif;
+
+$blue: #64c0e8;
+$red: #f74d4d;
+$green: #56d64c;
+$orange: #f9a62d;
+$black: #3d3d3d;
+$white: #fff;
+
+$border: 6px solid $black;
+$border-inverse: 6px solid $white;
+
+/* The big container */
+
+.cumulo {
+	width: 100%;
+	font-family: $sans;
+	color: $black;
+}
+
+/* Different levels of severity indication */
+
+.severe {
+	.info {
+		border-left: 6px solid $red;
+	}
+}
+
+.medium {
+	.info {
+		border-left: 6px solid $orange;
+	}
+}
+
+.mild {
+	.info {
+		border-left: 6px solid $green;
+	}
+}
+
+/* Sidebar styles */
+
+.sidebar {
+	width: 20%;
+	height: 100%;
+	border-right: $border;
+	position: fixed;
+	padding: 2em;
+	background-color: $blue;
+}
+
+/* Output container styles */
+
+.output {
+	width: 80%;
+	margin-left: 20%;
+}
+
+/* Output header styles */
+
+.alert-header {
+	width: 100%;
+	border-bottom: $border;
+	padding: 2em;
+	h1 {
+		font-size: 29px;
+		font-weight: bold;
+		border-bottom: $border;
+		display: inline-block;
+		padding-bottom: 10px;
+	}
+	
+}
+
+/* Styles for alert modules */
+
+.alert {
+	padding: 2em;
+	overflow: hidden;
+	background-color: #eee;
+	
+	@include transition(background-color .2s ease);
+
+	.info {
+		padding-left: 2em;
+		width: 80%;
+		float: left;
+		font-weight: bold;
+		h2 {
+			font-size: 23px;
+			color: $black;
+			border-bottom: $border;
+			display: inline-block;
+			padding-bottom: 10px;
+			margin-bottom: 10px;
+		}
+		h3 {
+			font-size: 23px;
+			color: $black;
+		}
+	}
+	
+	&:hover {
+		background-color: #ddd;
+	}
+	
+}
+
+.view-photos {
+	margin-top: .7em;
+	text-align: right;
+	overflow: hidden
+}
+
+.arrow-append {
+	float: right;
+	width: 0;
+	height: 0;
+	content: "";
+	display: inline-block;
+	border-top: 30px solid transparent;
+	border-bottom: 30px solid transparent;
+	border-left: 25px solid #bbb;
+	background: none;
+}
+
+/* Styles for photo modules */
+
+.photo {
+	width: 25%;
+	padding: 1em;
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	margin: 0;
+	float: left;
+	background-color: #eee;
+	
+	img {
+		box-shadow: 0 0 3px #bbb;
+	}
+}
