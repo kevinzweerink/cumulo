@@ -2,6 +2,8 @@
 //Returns the place in the format "Anchorage, AK" in the form of a string, array, or an
 //array formatted for URL slugs
 
+(function() {
+
 function format_geocode( fips, areas, format ) {
 	var fips_array = [],
 		areas_array = [];
@@ -54,7 +56,7 @@ function format_geocode( fips, areas, format ) {
 			
 		}
 	} else {
-		alert ("uneven array lengths");
+		alert ( "uneven array lengths: " + fips_array.length + " " + areas_array.length + "fips: " + fips + "areas: " + areas + "fipsarray: " + fips_array + "areasarray: " + areas_array);
 	}
 }
 
@@ -66,8 +68,6 @@ function getCoordinates( geocode , area ) {
 	var slugs = format_geocode( geocode , area , "array_slug" ),
 		latsLongs = [];
 		averageSpot = [];
-		
-	console.log(slugs);
 		
 	for ( var i = 0; i < slugs.length; i+=1 ) {
 		var req = $.ajax({
@@ -118,15 +118,50 @@ function findAverageLocation( locations ) {
 	
 	out = [avgLat, avgLon];
 	
-	console.log(out);
 	return out;
 	
 }
 
 //Display the entries from the NOAA XML Feed
 function display_entries( feed ) {
-
-	var output = document.getElementById("alerts");
+	
+	if (document.getElementById("alerts")) {
+		var output = document.getElementById("alerts");
+	} else {
+		var output = document.createElement("div"),
+			masterEl = document.getElementById("data"),
+			outputHeader = document.createElement("header"),
+			outputHeaderText = document.createElement("h1"),
+			shuffleLink = document.createElement("a"),
+			barContainer = document.createElement("div"),
+			bar1 = document.createElement("div"),
+			bar2 = document.createElement("div"),
+			bar3 = document.createElement("div");
+			
+		barContainer.setAttribute("class", "bar-icon");
+		bar1.setAttribute("class","bar bar-one");
+		bar2.setAttribute("class","bar bar-two");
+		bar3.setAttribute("class", "bar bar-three");
+		
+		barContainer.appendChild(bar1);
+		barContainer.appendChild(bar2);
+		barContainer.appendChild(bar3);
+		
+		outputHeader.setAttribute("class", "alert-header");
+		outputHeaderText.innerHTML = "Current Alerts";
+		shuffleLink.setAttribute("href","#");
+		shuffleLink.setAttribute("class","shuffle");
+		shuffleLink.innerHTML = "Shuffle";
+		shuffleLink.appendChild(barContainer);
+		outputHeader.appendChild(outputHeaderText);
+		outputHeader.appendChild(shuffleLink);
+		output.setAttribute("class","alerts-container");
+		output.setAttribute("id","alerts");
+		masterEl.appendChild(outputHeader);
+		masterEl.appendChild(output);
+		
+	}
+	
 		
 	for (var i = 0; i < feed.length; i+=1) {
 		
@@ -153,6 +188,7 @@ function display_entries( feed ) {
 		linkWrap.setAttribute( "href","#" );
 		linkWrap.setAttribute( "data-geocode" , feedItem.geocode );
 		linkWrap.setAttribute( "data-area" , feedItem.areaDesc );
+		linkWrap.setAttribute( "data-polygon" , feedItem.polygon );
 			
 			
 
@@ -183,68 +219,153 @@ function display_entries( feed ) {
 		output.appendChild(container);
 		
 	}
-	
+		
 }
 
-//Display the entries from an Instagram feed
-//Currently only searches for "stratocumulus" tags, but 
-//Ideally will search by location for the average spot.
-function getInstagramFeed(coordinates) {
+function masonite() {
+	var $container = $('.photo-wrapper'),
+		containerWidth = $container.width();
+		$container.imagesLoaded(function(){
+		  $container.masonry({
+		    itemSelector : '.photo',
+		    columnWidth : function( containerWidth ) { return containerWidth / 3 },
+		    
+		   });
+		 });
+}
+
+//Display the webcams
+function getWebcams(coordinates, area, conditions, severity, areaDisplay) {
 	
-	$(".output").fadeOut(250, function() {$(".output").empty()});
+	$("#data").fadeOut(100, function() {$("#data").empty()});
 	
 	var req = $.ajax({
-	    url: 'https://api.instagram.com/v1/tags/stratocumulus/media/recent?access_token=341588632.f59def8.a6be02bdf9fb47e5b2df2a447afd6080',
-	    dataType: 'jsonp',
-	    type: "GET",
+		url: "http://api.webcams.travel/rest?method=wct.webcams.list_nearby&devid=0cb0619e68a17067b8cbb899d32ddd1e&lat=" + coordinates[0] + "&lng=" + coordinates[1] + "&radius=50&unit=km&per_page=50&format=json",
+		dataType: "jsonp",
+		type: "GET"
 	});
-	req.done(function( data ) {
-	
-		var photos = data.data,
+	req.done(function(data) {
+		
+		var photos = data.webcams.webcam,
 			container = document.getElementById("data"),
+			wrapper = document.createElement("div"),
 			alertHeader = document.createElement( "div" ),
 			alertType = document.createElement( "h2" ),
 			location = document.createElement( "h3" ),
-			info = document.createElement( "div" );
-		
+			info = document.createElement( "div" ),
+			back = document.createElement("div"),
+			backLink = document.createElement("a"),
+			photoMasonry = document.createElement("div");
+			photoWrapper = document.createElement("div");
+			sidebar = document.getElementById("sidebar");
+			
+		photoMasonry.setAttribute("class","photos");
 		info.setAttribute("class","info");
-		alertType.innerHTML = "Severe Thunderstorm Warning";
-		location.innerHTML = "Baltimore, MD";
+		alertType.innerHTML = conditions;
+		location.innerHTML = areaDisplay.substring(0, 50) + "&hellip;";
+		back.setAttribute("class","back");
+		backLink.innerHTML = "<img src='images/back.png' /> <span class='back-text'>Back to alerts</span>";
+		backLink.setAttribute("href","#");
+		wrapper.setAttribute("class","photo-container");
+		photoWrapper.setAttribute("class","photo-wrapper");
 		
+		back.appendChild(backLink);
 		info.appendChild(alertType);
 		info.appendChild(location);
 		alertHeader.appendChild(info);
-		alertHeader.setAttribute("class","severe alert alert-header");
+		alertHeader.setAttribute("class", severity + " alert-header");
 		
-		container.appendChild(alertHeader);
+		wrapper.appendChild(alertHeader);
+					
+		if (photos.length > 0) {
+		
+			for (var i=0; i<photos.length; i+=1) {
+						
+				var img = document.createElement("img"),
+					img_container = document.createElement("div"),
+					photo = photos[i],
+					url = photo.preview_url;
+				
+				img.setAttribute("src",url);
+				img_container.setAttribute("class","photo");
+				
+				img_container.appendChild(img);
+				
+				photoWrapper.appendChild(img_container);
+				
+			}
+			
+			photoMasonry.appendChild(photoWrapper);					
+			wrapper.appendChild(photoMasonry);
+			
+			sidebar.appendChild(back);
+			container.appendChild(wrapper);
+			masonite();
+		
+		} else {
+			
+			var error = document.createElement("div"),
+				errorText = document.createElement("h2"),
+				searchTags = conditions.replace(/statement/gi, "");
+				
+				searchTags = searchTags.replace(/special/gi, "");
+				searchTags = searchTags.replace(/alert/gi,"");
+				searchTags = searchTags.replace(/advisory/gi, "");
+				searchTags = searchTags.replace(/ /g, ",");
+				
+			if(searchTags.charAt( searchTags.length-1 ) == ",") {
+				searchTags = searchTags.slice(0, -1);
+			}
+
+			flickrUrl = "http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=9191cd2c6c7fcb1cfcbde3b5c2952a6f&format=json&tags=" + searchTags + "&tag_mode=all&per_page=15";
+			
+			var req = $.ajax({
+				url: flickrUrl,
+				dataType: "jsonp",
+				jsonpCallback: 'jsonFlickrApi',
+				type: "GET",
+				success: function( data ) {
+					photos = data.photos.photo;
+					console.log(photos);
+					for (var i = 0; i<photos.length; i+=1) {
+						var img = document.createElement("img"),
+							img_container = document.createElement("div"),
+							photo = photos[i],
+							url = "http://farm" + photo.farm + ".staticflickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + ".jpg";
+						
+						img.setAttribute("src",url);
+						img_container.setAttribute("class","photo");
+						
+						img_container.appendChild(img);
+						
+						photoWrapper.appendChild(img_container);
+						
+					}
+					
+					error.setAttribute("class", "no-cams");
+					errorText.innerHTML = "Sorry, no cameras found, here's some cool weather pix from flickr instead.";
+					error.appendChild(errorText);
+					wrapper.appendChild(error);
+					
+					photoMasonry.appendChild(photoWrapper);					
+					wrapper.appendChild(photoMasonry);
+					
+					sidebar.appendChild(back);
+					container.appendChild(wrapper);
+					masonite();
+				}
+			});
 
 			
-			
-		
-		for (var i=0; i<photos.length; i+=1) {
-		
-			var img = document.createElement("img"),
-				img_container = document.createElement("div"),
-				photo = photos[i],
-				url = photo.images.standard_resolution.url;
-			
-			img.setAttribute("src",url);
-			img_container.setAttribute("class","photo");
-			
-			img_container.appendChild(img);
-			
-			container.appendChild(img_container);
-		
 		}
 		
-		$(".output").fadeIn(250);
+		$("#data").fadeIn(250);
 		
 	});
 	
+	
 }
 
-//The number of feed posts you want returned
-var feedLen = 10;
 
 // Set Up Google Feeds API
 google.load("feeds", "1");
@@ -257,7 +378,7 @@ function parseData(result) {
 			entries = [];
 		
 		//Put whatever tags you're looking for in here
-		params = [ "event", "severity", "areaDesc", "geocode" ];
+		params = [ "event", "severity", "areaDesc", "geocode" , "polygon" ];
 		
 		var l = 0;			
 		for ( var i = 0 ; i < items.length; i+=1 ) {
@@ -272,6 +393,11 @@ function parseData(result) {
 					
 					entries[i][params[j]] = element[0].childNodes[3].textContent;
 				
+				} else if (params[j] === "polygon") {
+					
+					element = google.feeds.getElementsByTagNameNS(items[i], "*", params[j]);
+					entries[i][params[j]] = element[0].textContent;
+ 					
 				} else {
 				
 					//Uses google feeds api to take get the current parameter
@@ -304,7 +430,7 @@ function initialize() {
 		entries;
 	
 	//Sets the number of entries to your specified feed length (delete if you want the full feed)		
-	theFeed.setNumEntries(1000);
+	theFeed.setNumEntries(100000);
 	
 	//Sets format to XML
 	theFeed.setResultFormat(google.feeds.Feed.XML_FORMAT);
@@ -321,24 +447,63 @@ google.setOnLoadCallback(initialize);
 $(document).ready( function() {
 	
 	//When you click an entry, start the instagram feed
-	$(".alerts-container").on("click", "a", function(event){
+	$("body").on("click", ".alert a", function(event){
+	
 		event.preventDefault();
 		
 		var geocode = $(this).attr("data-geocode"),
 			area = $(this).attr("data-area"),
+			areaDisplay = format_geocode( geocode , area , "string" ),
+			conditions = $(this).find("h2")[0].innerHTML,
+			severity = $(this).parent().attr("class"),
+			/* polygon = format_polygon( $(this).attr("data-polygon") ), */
 			response,
 			coordinates;
-		
+			
 		//Geocode api for coordinates on locations in entry
 		response = getCoordinates( geocode , area );
-		
+
 		//Once geocode api calls end, get the instagram feed
-		$(document).ajaxStop(function() {
+		$(this).ajaxStop(function() {
+		
+			/*
+if (isNaN(response)) {
+				response = polygon;
+			}
+*/
+			
+			/*
+if (response instanceof Array && response[0] instanceof Array && response) {
+				
+			}
+*/
 			coordinates = findAverageLocation(response);
-			$("#alerts").fadeOut(1000, getInstagramFeed(coordinates));
+			getWebcams(coordinates, area, conditions, severity, areaDisplay);
+		});
+	});
+	
+	$("body").on("click", ".back", function(e) {
+		e.preventDefault();
+		$("#data").fadeOut(100, function(){
+			$(".back").fadeOut(100, function(){ $(".back").remove() });
+			$("#data").empty();
+				initialize();
+				$("#data").fadeIn(100);
+				
+		});
+		
+	});
+	
+	$("body").on("click",".shuffle", function(e) {
+		e.preventDefault();
+		$(".alerts-container").fadeOut(200, function() {
+			$(".alert").shuffle( $(".alerts-container") );
+			$(".alerts-container").fadeIn(200);
 		});
 	});
 	
 });
+
+})();
 
 
