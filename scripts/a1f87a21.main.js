@@ -264,7 +264,7 @@ function getWebcams(coordinates, area, conditions, severity, areaDisplay) {
 		alertType.innerHTML = conditions;
 		location.innerHTML = areaDisplay.substring(0, 50) + "&hellip;";
 		back.setAttribute("class","back");
-		backLink.innerHTML = "<img src='images/back.png' /> <span class='back-text'>Back to alerts</span>";
+		backLink.innerHTML = "<img src='images/b4228987.back.png' /> <span class='back-text'>Back to alerts</span>";
 		backLink.setAttribute("href","#");
 		wrapper.setAttribute("class","photo-container");
 		photoWrapper.setAttribute("class","photo-wrapper");
