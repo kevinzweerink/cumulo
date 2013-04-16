@@ -27,21 +27,60 @@ $border-inverse: 6px solid $white;
 
 /* Different levels of severity indication */
 
-.severe {
+.severe, .severe:visited {
 	.info {
 		border-left: 6px solid $red;
 	}
-}
-
-.medium {
-	.info {
-		border-left: 6px solid $orange;
+	&:hover {
+		background-color: $red;
+		.info {
+			border-left: 6px solid $white;
+		}
+	}
+	&.alert-header {
+		background-color: $red;
+		color: $white;
+		.info {
+			border-left: 6px solid $white;
+		}
 	}
 }
 
-.mild {
+.medium, .medium:visited {
+	.info {
+		border-left: 6px solid $orange;
+	}
+	&:hover {
+		background-color: $orange;
+		.info {
+			border-left: 6px solid $white;
+		}
+	}
+	&.alert-header {
+		background-color: $orange;
+		color: $white;
+		.info {
+			border-left: 6px solid $white;
+		}
+	}
+}
+
+.mild, .mild:visited {
 	.info {
 		border-left: 6px solid $green;
+	}
+	&:hover {
+		background-color: $green;
+		.info {
+			border-left: 6px solid $white;
+		}
+	}
+	&.alert-header {
+		background-color: $green;
+		color: $white;
+		.info {
+			border-left: 6px solid $white;
+		}
 	}
 }
 
@@ -53,7 +92,6 @@ $border-inverse: 6px solid $white;
 	border-right: $border;
 	position: fixed;
 	padding: 2em;
-	background-color: $blue;
 }
 
 /* Output container styles */
@@ -61,6 +99,7 @@ $border-inverse: 6px solid $white;
 .output {
 	width: 80%;
 	margin-left: 20%;
+	background-color: $white;
 }
 
 /* Output header styles */
@@ -69,6 +108,7 @@ $border-inverse: 6px solid $white;
 	width: 100%;
 	border-bottom: $border;
 	padding: 2em;
+	background-color: $white;
 	h1 {
 		font-size: 29px;
 		font-weight: bold;
@@ -79,14 +119,62 @@ $border-inverse: 6px solid $white;
 	
 }
 
+.shuffle {
+	float: right;
+	width: 10%;
+	text-indent: -9999px;
+
+	.bar {
+		@include transition(top .2s ease .1s);
+		width: 100%;
+		height: 6px;
+		background-color: $black;
+		margin-bottom: 3px;
+		position: absolute;
+		overflow: hidden;
+	}
+	
+	.bar-icon {
+		position: relative;
+		overflow: hidden;
+		height: 30px;
+	}
+	
+	.bar-one {
+		top: 0;
+		left: 0;
+	}
+	
+	.bar-two {
+		top: 10px;
+		left: 0;
+	}
+	
+	.bar-three {
+		top: 20px;
+		left: 0;
+	}
+	&:hover {
+		.bar-one {
+			top: 20px;
+		}
+		.bar-two {
+			top: 0px;
+		}
+		.bar-three {
+			top: 10px;
+		}
+	}
+}
+
 /* Styles for alert modules */
 
 .alert {
 	padding: 2em;
 	overflow: hidden;
-	background-color: #eee;
+	background-color: $white;
 	
-	@include transition(background-color .2s ease);
+	@include transition(background-color .2s ease, border .2s ease);
 
 	.info {
 		padding-left: 2em;
@@ -108,7 +196,9 @@ $border-inverse: 6px solid $white;
 	}
 	
 	&:hover {
-		background-color: #ddd;
+		.arrow-append {
+			margin-right: 0;
+		}
 	}
 	
 }
@@ -120,6 +210,7 @@ $border-inverse: 6px solid $white;
 }
 
 .arrow-append {
+	@include transition(margin .2s ease);
 	float: right;
 	width: 0;
 	height: 0;
@@ -127,22 +218,79 @@ $border-inverse: 6px solid $white;
 	display: inline-block;
 	border-top: 30px solid transparent;
 	border-bottom: 30px solid transparent;
-	border-left: 25px solid #bbb;
+	border-left: 25px solid $white;
 	background: none;
+	margin-right: 20px;
 }
 
 /* Styles for photo modules */
 
-.photo {
-	width: 25%;
-	padding: 1em;
-	border-right: 1px solid #ddd;
-	border-bottom: 1px solid #ddd;
-	margin: 0;
-	float: left;
-	background-color: #eee;
+.no-cams {
+	padding: 2em;
+	background-color: $white;
+	border-bottom: $border;
 	
-	img {
-		box-shadow: 0 0 3px #bbb;
+	h2 {
+		font-size: 23px;
+		font-weight: bold;
+		color: $black;
+	}
+}
+
+.photo {
+	width: 31.3%;
+	margin: 1%;
+	float: left;
+	background-color: $white;
+	text-align: center;
+}
+
+.photos {
+	width: 97%;
+	margin: 1em auto;
+}
+
+.back {
+	width: 100%;
+	border-top: $border;
+	margin-top: 2em;
+	padding-top: 2em;
+	a {
+		display: block;
+		color: $black;
+		text-decoration: none;
+		margin-left: 2%;
+		position: relative;
+		padding: 1em;
+		font-weight: bold;
+		font-size: 23px;
+		
+		.back-text {
+			@include transition (left .2s ease .2s, opacity .2s ease);
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		
+		img {
+			@include transition (left .2s ease .2s, opacity .2s ease);
+			width: 20px;
+			position: absolute;
+			top: 1px;
+			left: -25px;
+			opacity: 0;
+		}
+		
+		&:hover {
+			.back-text {
+				@include transition (left .2s ease, opacity .2s ease .2s);
+				left: 26px;
+			}
+			img {
+				@include transition (left .2s ease, opacity .2s ease .2s);
+				left: 0;
+				opacity: 1;
+			}
+		}
 	}
 }
