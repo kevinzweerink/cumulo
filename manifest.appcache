@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-# Time: Wed Apr 03 2013 15:40:58 GMT-0400 (EDT)
+# Time: Tue Apr 16 2013 16:41:28 GMT-0400 (EDT)
 # This manifest was created by confess.js, http://github.com/jamesgpearce/confess
 #
 # Retrieved URL: http://localhost:3501/
@@ -30,9 +30,11 @@ https://www.google.com/uds/?file=feeds&v=1
 https://www.google.com/uds/api/feeds/1.0/77f89919ef841f93359ce886504e4e3f/default+en.I.js
 https://www.google.com/uds/api/feeds/1.0/77f89919ef841f93359ce886504e4e3f/default+en.css
 images/15d235c0.logo.png
-scripts/a15ea83b.main.js
+scripts/a1f87a21.main.js
+scripts/vendor/2f7a0fc1.jquery.shuffle.js
+scripts/vendor/cebddefd.jquery.masonry.min.js
 scripts/vendor/cf69c6f2.modernizr.min.js
-styles/97eaba27.main.css
+styles/6556854d.main.css
 
 NETWORK:
 *
